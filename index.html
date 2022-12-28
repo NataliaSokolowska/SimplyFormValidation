@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parcel Sandbox</title>
+    <meta charset="UTF-8" />
+  </head>
+
+  <body>
+    <div class="container">
+      <form class="form" method="post" id="form">
+        <div class="form-row">
+          <label for="name">Imię (min. 3 znaki)*</label>
+          <input type="text" name="name" id="name" ">
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <label for="name">Email*</label>
+          <input type="email" name="email" id="email" />
+          <p class="error"></p>
+        </div>
+        <div class="form-row">
+          <button type="submit" class="button submit-btn">
+            Wyślij
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <script src="src/index.js"></script>
+  </body>
+</html>
