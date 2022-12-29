@@ -117,111 +117,62 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"src/validate.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.validateFields = void 0;
-var isValidEmail = function isValidEmail(email) {
-  var reg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return reg.test(String(email).toLowerCase());
-};
-var isValidPassword = function isValidPassword(password) {
-  var reg = /^(?=.*\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,16}$/;
-  return reg.test(String(password));
-};
-var validateFields = function validateFields(value, fieldName, returnValue) {
-  if (fieldName !== "") {
-    if (fieldName === "name") {
-      if (value.length < 3) {
-        returnValue.message = "The name field should contain at least 3 characters";
-        return;
-      } else {
-        returnValue.isValid = true;
-      }
-    }
-    if (fieldName === "email") {
-      if (value === "") {
-        returnValue.message = "Add email";
-        return;
-      } else if (!isValidEmail(value)) {
-        returnValue.message = "Invalid email address";
-        return;
-      } else {
-        returnValue.isValid = true;
-      }
-      return returnValue;
-    }
-    if (fieldName === "password") {
-      if (value === "") {
-        returnValue.message = "Add password";
-        return;
-      } else if (!isValidPassword(value)) {
-        returnValue.message = "Password should contain min 8 max 16 characters, at least 1 symbol, upper and lower case letters and a number";
-        return;
-      } else {
-        returnValue.isValid = true;
-      }
-      return returnValue;
+})({"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+var bundleURL = null;
+function getBundleURLCached() {
+  if (!bundleURL) {
+    bundleURL = getBundleURL();
+  }
+  return bundleURL;
+}
+function getBundleURL() {
+  // Attempt to find the URL of the current script and use that as the base URL
+  try {
+    throw new Error();
+  } catch (err) {
+    var matches = ('' + err.stack).match(/(https?|file|ftp|chrome-extension|moz-extension):\/\/[^)\n]+/g);
+    if (matches) {
+      return getBaseURL(matches[0]);
     }
   }
-};
-exports.validateFields = validateFields;
-},{}],"src/errorMessage.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.setErrorMessage = void 0;
-var setErrorMessage = function setErrorMessage(returnValue, el) {
-  var inputControl = el.parentElement;
-  var errorDisplay = inputControl.querySelector(".error");
-  var isValid = returnValue.isValid,
-    message = returnValue.message;
-  if (!isValid && message !== null) {
-    errorDisplay.innerText = message;
+  return '/';
+}
+function getBaseURL(url) {
+  return ('' + url).replace(/^((?:https?|file|ftp|chrome-extension|moz-extension):\/\/.+)?\/[^/]+(?:\?.*)?$/, '$1') + '/';
+}
+exports.getBundleURL = getBundleURLCached;
+exports.getBaseURL = getBaseURL;
+},{}],"node_modules/parcel-bundler/src/builtins/css-loader.js":[function(require,module,exports) {
+var bundle = require('./bundle-url');
+function updateLink(link) {
+  var newLink = link.cloneNode();
+  newLink.onload = function () {
+    link.remove();
+  };
+  newLink.href = link.href.split('?')[0] + '?' + Date.now();
+  link.parentNode.insertBefore(newLink, link.nextSibling);
+}
+var cssTimeout = null;
+function reloadCSS() {
+  if (cssTimeout) {
     return;
   }
-  if (isValid) {
-    errorDisplay.innerText = "";
-  }
-};
-exports.setErrorMessage = setErrorMessage;
-},{}],"src/index.js":[function(require,module,exports) {
-"use strict";
-
-var _validate = require("./validate");
-var _errorMessage = require("./errorMessage");
-var form = document.getElementById("form");
-var onSubmitForm = function onSubmitForm(event) {
-  event.preventDefault();
-  var formElelemnts = event.currentTarget.elements;
-  var isSubmit = [];
-  Array.prototype.slice.call(formElelemnts).forEach(function (el) {
-    var _el$value;
-    var fieldName = el.name;
-    var value = (_el$value = el.value) === null || _el$value === void 0 ? void 0 : _el$value.trim();
-    var returnValue = {
-      isValid: false,
-      message: null
-    };
-    (0, _validate.validateFields)(value, fieldName, returnValue);
-    (0, _errorMessage.setErrorMessage)(returnValue, el);
-    if (fieldName !== "") {
-      isSubmit.push(returnValue.isValid);
+  cssTimeout = setTimeout(function () {
+    var links = document.querySelectorAll('link[rel="stylesheet"]');
+    for (var i = 0; i < links.length; i++) {
+      if (bundle.getBaseURL(links[i].href) === bundle.getBundleURL()) {
+        updateLink(links[i]);
+      }
     }
-  });
-  if (isSubmit.every(function (el) {
-    return el;
-  })) {
-    form.submit();
-  }
-};
-form.addEventListener("submit", onSubmitForm);
-},{"./validate":"src/validate.js","./errorMessage":"src/errorMessage.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+    cssTimeout = null;
+  }, 50);
+}
+module.exports = reloadCSS;
+},{"./bundle-url":"node_modules/parcel-bundler/src/builtins/bundle-url.js"}],"src/styles.css":[function(require,module,exports) {
+var reloadCSS = require('_css_loader');
+module.hot.dispose(reloadCSS);
+module.hot.accept(reloadCSS);
+},{"_css_loader":"node_modules/parcel-bundler/src/builtins/css-loader.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -390,5 +341,5 @@ function hmrAcceptRun(bundle, id) {
     return true;
   }
 }
-},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js","src/index.js"], null)
-//# sourceMappingURL=/src.a2b27638.js.map
+},{}]},{},["node_modules/parcel-bundler/src/builtins/hmr-runtime.js"], null)
+//# sourceMappingURL=/styles.dd855970.js.map
